@@ -61,7 +61,7 @@ export const LineChart = ({
   data: { totalSales: number; date?: number }[];
   value: string;
 }) => {
-  value === "Day" && console.log(dbData[0]?.date);
+  // value === "Day" && console.log(dbData[0]?.date);
   const labels =
     value === "Day"
       ? dbData.map((d) => `Date : ${d.date}`)
