@@ -1,4 +1,3 @@
-import React from "react";
 import { IComment } from "../types/productTypes";
 
 const SingleComment = ({ comment }: { comment: IComment }) => {

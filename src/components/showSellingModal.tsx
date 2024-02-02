@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
 import {
   Button,
   Dialog,
-  DialogHeader,
   DialogBody,
   DialogFooter,
+  DialogHeader,
   Input,
 } from "@material-tailwind/react";
+import { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { useAppSelector } from "../redux/hooks";
 import { useGetSingleProductQuery } from "../redux/module/product/productApi";
-import { SubmitHandler, useForm } from "react-hook-form";
-import Loader from "./loader";
 import { usePostSellMutation } from "../redux/module/sell/sellApi";
-import toast from "react-hot-toast";
+import Loader from "./loader";
 type IProps = {
   id: string;
 };
@@ -26,10 +26,12 @@ export function ShowSellingModal({ id }: IProps) {
     formState: { errors },
   } = useForm<Inputs>();
   const { token } = useAppSelector((state) => state.user);
-  const { data, isLoading } = useGetSingleProductQuery({ id, token },
+  const { data, isLoading } = useGetSingleProductQuery(
+    { id, token },
     {
       pollingInterval: import.meta.env.VITE_POLLING,
-    });
+    }
+  );
   const [
     postSell,
     { isLoading: postLoding, isSuccess: postSuccess, error: postError },

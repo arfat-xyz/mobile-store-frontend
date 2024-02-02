@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { WithContext as ReactTags } from "react-tag-input";
+import { WithContext as ReactTags, Tag } from "react-tag-input";
 import Select from "react-select";
 import {
   Button,
@@ -18,12 +18,7 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useAppSelector } from "../redux/hooks";
 import { useAddProductMutation } from "../redux/module/product/productApi";
 import Loader from "./loader";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-interface TagInterface {
-  id: number;
-  text: string;
-}
 type Inputs = {
   productName: string;
   image: string;
@@ -47,7 +42,7 @@ export function AddNewProduct() {
   const { token } = useAppSelector((state) => state.user);
   const [addProduct, { isLoading, isSuccess }] = useAddProductMutation();
   const [open, setOpen] = React.useState(false);
-  const [tags, setTags] = React.useState<TagInterface[]>([]);
+  const [tags, setTags] = React.useState<Tag[]>([]);
   const {
     register,
     handleSubmit,
@@ -90,18 +85,22 @@ export function AddNewProduct() {
     setTags(newTags);
   };
 
-  const handleAddition = (tag: TagInterface) => {
+  const handleAddition = (tag: Tag) => {
     // Handle tag addition
     setTags([...tags, tag]);
   };
 
-  const handleDrag = (tag: TagInterface, currPos: number, newPos: number) => {
+  const handleDrag = (tag: Tag, currPos: number, newPos: number) => {
     // Handle tag drag and drop
     const newTags = [...tags];
     newTags.splice(currPos, 1);
     newTags.splice(newPos, 0, tag);
     setTags(newTags);
   };
+
+  function handleTagClick(): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <>
@@ -495,12 +494,23 @@ export function AddNewProduct() {
                   inputFieldPosition="bottom"
                   // autocomplete
                 /> */}
-                <ReactTags
+                {/* <ReactTags
                   tags={tags}
                   handleDelete={handleDelete}
                   handleAddition={handleAddition}
                   handleDrag={handleDrag}
                   inputFieldPosition="bottom"
+                /> */}
+                <ReactTags
+                  tags={tags}
+                  // suggestions={suggestions}
+                  // delimiters={delimiters}
+                  handleDelete={handleDelete}
+                  handleAddition={handleAddition}
+                  handleDrag={handleDrag}
+                  handleTagClick={handleTagClick}
+                  inputFieldPosition="bottom"
+                  autocomplete
                 />
               </div>
 

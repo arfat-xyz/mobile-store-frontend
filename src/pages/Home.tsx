@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
-import { LineChart } from "../components/charts";
-import { useGetDataQuery } from "../redux/module/sell/sellApi";
-import { useAppSelector } from "../redux/hooks";
-import toast from "react-hot-toast";
-import Loader from "../components/loader";
 import { Typography } from "@material-tailwind/react";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 import { SellTable } from "../components/SellTable";
+import { LineChart } from "../components/charts";
+import Loader from "../components/loader";
+import { useAppSelector } from "../redux/hooks";
+import { useGetDataQuery } from "../redux/module/sell/sellApi";
 
 const Home = () => {
   const { token } = useAppSelector((state) => state.user);
