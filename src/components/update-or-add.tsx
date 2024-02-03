@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { WithContext as ReactTags } from "react-tag-input";
 import Select from "react-select";
 import {
   Button,
@@ -20,10 +19,6 @@ import {
 } from "../redux/module/product/productApi";
 import Loader from "./loader";
 import toast from "react-hot-toast";
-interface TagInterface {
-  id: string;
-  text: string;
-}
 type Inputs = {
   productName: string;
   image: string;
@@ -41,7 +36,7 @@ type Inputs = {
   camera: string;
   battery: string;
   status?: boolean;
-  keyFeatures?: string[];
+  keyFeatures?: string[] | string;
 };
 type IProps = {
   id: string;
@@ -68,7 +63,6 @@ export const UpdateOrAdd = ({ id }: IProps) => {
     updateProduct,
     { isLoading: updateLoading, isSuccess: updateSuccess },
   ] = useUpdateProductMutation();
-  const [tags, setTags] = React.useState<TagInterface[]>([]);
   const {
     register,
     handleSubmit,
@@ -85,7 +79,6 @@ export const UpdateOrAdd = ({ id }: IProps) => {
       setValue("camera", data?.data?.camera.slice(0, -2));
       setValue("description", data?.data?.description);
       setValue("image", data?.data?.image);
-      setValue("keyFeatures", data?.data?.keyFeatures);
       setValue("model", data?.data?.model);
       setValue("os", data?.data?.os);
       setValue("price", data?.data?.price);
@@ -93,11 +86,8 @@ export const UpdateOrAdd = ({ id }: IProps) => {
       setValue("size", data?.data?.size);
       setValue("status", data?.data?.status);
       setValue("storage", data?.data?.storage);
-      const temp = data?.data?.keyFeatures.map((f: string) => ({
-        id: f,
-        text: f,
-      }));
-      setTags(temp);
+      console.log(data?.data?.keyFeatures[0]);
+      setValue("keyFeatures", data?.data?.keyFeatures[0]);
     }
   }, [getIsSuccess]);
   useEffect(() => {
@@ -115,10 +105,6 @@ export const UpdateOrAdd = ({ id }: IProps) => {
   }, [isSuccess]);
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    if (tags.length < 1) {
-      toast.error("please add features");
-      return;
-    }
     const { selectStorage, selectBrand, selectOs, ...other } = data;
     other.brand = selectBrand?.value ? selectBrand?.value : other.brand;
     other.storage = selectStorage?.value ? selectStorage?.value : other.storage;
@@ -126,17 +112,14 @@ export const UpdateOrAdd = ({ id }: IProps) => {
     other.camera = other.camera + "MP";
     // other.size = other.size + "inches";
     other.battery = other.battery + "MAh";
-    other.keyFeatures = tags.map((t) => t.text);
     other.price = parseInt(other.price as unknown as string);
     other.status = true;
+    other.keyFeatures = [];
+    other.keyFeatures.push(data.keyFeatures as string);
     addProduct({ data: other, token });
     // setOpen(!open);
   };
   const onUpdate: SubmitHandler<Inputs> = (data) => {
-    if (tags.length < 1) {
-      toast.error("please add features");
-      return;
-    }
     const { selectStorage, selectBrand, selectOs, ...other } = data;
     other.brand = selectBrand?.value ? selectBrand?.value : other.brand;
     other.storage = selectStorage?.value ? selectStorage?.value : other.storage;
@@ -144,24 +127,11 @@ export const UpdateOrAdd = ({ id }: IProps) => {
     other.camera = other.camera + "MP";
     // other.size = other.size + "inches";
     other.battery = other.battery + "MAh";
-    other.keyFeatures = tags.map((t) => t.text);
     other.price = parseInt(other.price as unknown as string);
     other.status = true;
+    other.keyFeatures = [];
+    other.keyFeatures.push(data.keyFeatures as string);
     updateProduct({ data: other, id, token });
-  };
-
-  const handleDelete = (i: number) => {
-    setTags(tags.filter((_tag, index) => index !== i));
-  };
-  const handleAddition = (tag: TagInterface) => {
-    setTags([...tags, tag]);
-  };
-  const handleDrag = (tag: TagInterface, currPos: number, newPos: number) => {
-    const newTags = tags.slice();
-
-    newTags.splice(currPos, 1);
-    newTags.splice(newPos, 0, tag);
-    setTags(newTags);
   };
 
   return (
@@ -548,19 +518,23 @@ export const UpdateOrAdd = ({ id }: IProps) => {
                   color="blue-gray"
                   className="-mb-3"
                 >
-                  Key features
+                  Key Feature
                 </Typography>
-                <ReactTags
-                  //   className="w-full"
-                  tags={tags}
-                  // delimiters={delimiters}
-                  handleDelete={handleDelete}
-                  handleAddition={handleAddition}
-                  handleDrag={handleDrag}
-                  // handleTagClick={handleTagClick}
-                  inputFieldPosition="bottom"
-                  // autocomplete
-                />
+                <Input
+                  crossOrigin={""}
+                  type="text"
+                  size="lg"
+                  className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+                  {...register("keyFeatures", {
+                    required: "Key Features is required",
+                  })}
+                />{" "}
+                {errors.keyFeatures && (
+                  <p className="text-red-500">{errors.keyFeatures.message}</p>
+                )}
               </div>
 
               <Button
@@ -568,7 +542,6 @@ export const UpdateOrAdd = ({ id }: IProps) => {
                 placeholder={""}
                 variant="gradient"
                 color="blue"
-                disabled={!tags.length}
                 className="mt-6"
                 fullWidth
                 onClick={handleSubmit(onSubmit)}
@@ -578,7 +551,6 @@ export const UpdateOrAdd = ({ id }: IProps) => {
               <Button
                 type="submit"
                 placeholder={""}
-                disabled={!tags.length}
                 variant="gradient"
                 color="blue"
                 className="mt-6"

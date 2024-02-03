@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { WithContext as ReactTags, Tag } from "react-tag-input";
 import Select from "react-select";
 import {
   Button,
@@ -18,7 +17,6 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useAppSelector } from "../redux/hooks";
 import { useAddProductMutation } from "../redux/module/product/productApi";
 import Loader from "./loader";
-import toast from "react-hot-toast";
 type Inputs = {
   productName: string;
   image: string;
@@ -36,13 +34,12 @@ type Inputs = {
   camera: string;
   battery: string;
   status?: boolean;
-  keyFeatures?: string[];
+  keyFeatures: string[] | string;
 };
 export function AddNewProduct() {
   const { token } = useAppSelector((state) => state.user);
   const [addProduct, { isLoading, isSuccess }] = useAddProductMutation();
   const [open, setOpen] = React.useState(false);
-  const [tags, setTags] = React.useState<Tag[]>([]);
   const {
     register,
     handleSubmit,
@@ -51,11 +48,6 @@ export function AddNewProduct() {
     formState: { errors },
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    if (tags.length < 1) {
-      toast.error("add ta feature");
-      window.alert("add ta feature");
-      return;
-    }
     const { selectStorage, selectBrand, selectOs, ...other } = data;
     other.brand = selectBrand?.value || "IPhone";
     other.storage = selectStorage?.value || "64 GB";
@@ -63,11 +55,11 @@ export function AddNewProduct() {
     other.camera = other.camera + "MP";
     // other.size = other.size + "inches";
     other.battery = other.battery + "MAh";
-    other.keyFeatures = tags.map((t) => t.text);
     other.price = parseInt(other.price as unknown as string);
     other.status = true;
+    other.keyFeatures = [];
+    other.keyFeatures.push(data.keyFeatures as string);
     addProduct({ data: other, token });
-    setTags([]);
     reset();
     // setOpen(false);
   };
@@ -78,29 +70,6 @@ export function AddNewProduct() {
     if (isSuccess) setOpen(!open);
   }, [isSuccess]);
   const handleOpen = () => setOpen(!open);
-  const handleDelete = (index: number) => {
-    // Handle tag deletion
-    const newTags = [...tags];
-    newTags.splice(index, 1);
-    setTags(newTags);
-  };
-
-  const handleAddition = (tag: Tag) => {
-    // Handle tag addition
-    setTags([...tags, tag]);
-  };
-
-  const handleDrag = (tag: Tag, currPos: number, newPos: number) => {
-    // Handle tag drag and drop
-    const newTags = [...tags];
-    newTags.splice(currPos, 1);
-    newTags.splice(newPos, 0, tag);
-    setTags(newTags);
-  };
-
-  function handleTagClick(): void {
-    throw new Error("Function not implemented.");
-  }
 
   return (
     <>
@@ -471,47 +440,33 @@ export function AddNewProduct() {
                   {...register("battery", {
                     required: "Battery is required",
                   })}
-                />{" "}
+                />
                 {errors.battery && (
                   <p className="text-red-500">{errors.battery.message}</p>
-                )}
+                )}{" "}
                 <Typography
                   placeholder={""}
                   variant="h6"
                   color="blue-gray"
                   className="-mb-3"
                 >
-                  Key features
+                  Key Features
                 </Typography>
-                {/* <ReactTags
-                  className="w-full"
-                  tags={tags}
-                  // delimiters={delimiters}
-                  handleDelete={handleDelete}
-                  handleAddition={handleAddition}
-                  handleDrag={handleDrag}
-                  // handleTagClick={handleTagClick}
-                  inputFieldPosition="bottom"
-                  // autocomplete
-                /> */}
-                {/* <ReactTags
-                  tags={tags}
-                  handleDelete={handleDelete}
-                  handleAddition={handleAddition}
-                  handleDrag={handleDrag}
-                  inputFieldPosition="bottom"
-                /> */}
-                <ReactTags
-                  tags={tags}
-                  // suggestions={suggestions}
-                  // delimiters={delimiters}
-                  handleDelete={handleDelete}
-                  handleAddition={handleAddition}
-                  handleDrag={handleDrag}
-                  handleTagClick={handleTagClick}
-                  inputFieldPosition="bottom"
-                  autocomplete
+                <Input
+                  crossOrigin={""}
+                  type="text"
+                  size="lg"
+                  className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+                  {...register("keyFeatures", {
+                    required: "Key features is required",
+                  })}
                 />
+                {errors.keyFeatures && (
+                  <p className="text-red-500">{errors.keyFeatures.message}</p>
+                )}
               </div>
 
               <Button
