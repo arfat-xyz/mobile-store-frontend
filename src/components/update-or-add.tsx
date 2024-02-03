@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
-import Select from "react-select";
 import {
   Button,
+  Card,
   Dialog,
-  DialogHeader,
   DialogBody,
   DialogFooter,
-  Card,
-  Typography,
+  DialogHeader,
   Input,
+  Typography,
 } from "@material-tailwind/react";
+import { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import Select from "react-select";
 import { useAppSelector } from "../redux/hooks";
 import {
   useAddProductMutation,
@@ -18,7 +19,6 @@ import {
   useUpdateProductMutation,
 } from "../redux/module/product/productApi";
 import Loader from "./loader";
-import toast from "react-hot-toast";
 type Inputs = {
   productName: string;
   image: string;
