@@ -12,6 +12,7 @@ import { UpdateOrAdd } from "./update-or-add";
 export const Table = ({ allProducts }: { allProducts: IProduct[] }) => {
   const [productIds, setProductIds] = useState<string[]>([]);
   const TABLE_HEAD: string[] = [
+    "Model",
     "Image",
     "Available",
     "Price",
@@ -20,6 +21,7 @@ export const Table = ({ allProducts }: { allProducts: IProduct[] }) => {
     "Duplicate & Edit",
     "Delete",
   ];
+  console.log(allProducts, "All products");
   const { token } = useAppSelector((state) => state.user);
   const [deleteProduct, { isError, isLoading, isSuccess }] =
     useDeleteSingleProductMutation();
@@ -96,7 +98,7 @@ export const Table = ({ allProducts }: { allProducts: IProduct[] }) => {
         </thead>
         <tbody>
           {allProducts.map(
-            ({ productName, _id, price, quantity, image }, index) => {
+            ({ productName, _id, price, quantity, image, model }, index) => {
               const isLast = index === allProducts.length - 1;
               const classes = isLast
                 ? "p-4"
@@ -128,6 +130,16 @@ export const Table = ({ allProducts }: { allProducts: IProduct[] }) => {
                       color="blue-gray"
                       className="font-normal"
                     >
+                      {model}
+                    </Typography>
+                  </td>
+                  <td className={classes}>
+                    <Typography
+                      placeholder={""}
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
                       <img
                         className="h-11 w-11 rounded-full object-cover object-center"
                         src={image}
@@ -135,6 +147,7 @@ export const Table = ({ allProducts }: { allProducts: IProduct[] }) => {
                       />
                     </Typography>
                   </td>
+
                   <td className={classes}>
                     <Typography
                       placeholder={""}

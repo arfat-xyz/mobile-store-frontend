@@ -86,7 +86,6 @@ export const UpdateOrAdd = ({ id }: IProps) => {
       setValue("size", data?.data?.size);
       setValue("status", data?.data?.status);
       setValue("storage", data?.data?.storage);
-      console.log(data?.data?.keyFeatures[0]);
       setValue("keyFeatures", data?.data?.keyFeatures[0]);
     }
   }, [getIsSuccess]);

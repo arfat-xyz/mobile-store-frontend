@@ -21,9 +21,9 @@ type Inputs = {
 };
 
 export function SignUp() {
+  const navigate = useNavigate();
   const [updatePost, { isLoading, isSuccess, error, data: userData }] =
     useCreateUserMutation();
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
